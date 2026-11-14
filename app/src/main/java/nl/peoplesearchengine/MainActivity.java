@@ -17,8 +17,4 @@ public class MainActivity extends Activity {
         setContentView(web);
         web.loadUrl("file:///android_asset/index.html");
     }
-    @Override public void onBackPressed() {
-        WebView web = (WebView) findViewById(android.R.id.content).getRootView();
-        super.onBackPressed();
-    }
 }
