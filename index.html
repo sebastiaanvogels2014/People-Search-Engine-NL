@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>People Search Engine NL</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#131e30;--line:#26364d;--muted:#aab8ca;--accent:#66d9c1}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1b3150 0,var(--bg) 55%);color:#f4f7fb;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+main{width:min(760px,calc(100% - 32px));margin:48px auto;padding-bottom:48px}
+header{text-align:center;margin-bottom:28px}.mark{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:18px;background:#1e3a50;color:var(--accent);font-size:28px}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.1;margin:16px 0 8px}header p,.hint{color:var(--muted)}
+.panel{background:rgba(19,30,48,.96);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 18px 55px #0005}
+label{display:block;font-weight:650;margin:16px 0 7px}input{width:100%;padding:14px 15px;border:1px solid #3a4b63;border-radius:11px;background:#0b1423;color:white;font:inherit}input:focus{outline:2px solid var(--accent);border-color:transparent}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.hint{font-size:13px;margin:6px 0 0}
+button{border:0;border-radius:11px;padding:14px 18px;font:700 16px system-ui;cursor:pointer}
+.primary{width:100%;margin-top:22px;background:var(--accent);color:#09201c}.primary:hover{filter:brightness(1.08)}
+.results{display:none;margin-top:22px}.results h2{font-size:18px}.links{display:grid;gap:10px}.links a{display:block;padding:14px;border:1px solid var(--line);border-radius:12px;color:#dffcf5;text-decoration:none;background:#0d1929}.links a:hover{border-color:var(--accent)}
+.notice{margin-top:18px;padding:14px;border-left:3px solid var(--accent);background:#102538;border-radius:8px;color:#d7e5f0;font-size:14px}
+footer{text-align:center;color:var(--muted);font-size:13px;margin-top:22px}
+@media(max-width:560px){main{margin:26px auto}.panel{padding:18px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="mark" aria-hidden="true">⌕</div><h1>People Search Engine NL</h1><p>Vind openbare nieuwsberichten en professionele vermeldingen in Nederland.</p></header>
+<section class="panel">
+<form id="searchForm">
+<div class="row">
+<div><label for="first">Voornaam</label><input id="first" name="first" autocomplete="given-name" required maxlength="60" placeholder="Bijv. Jan"></div>
+<div><label for="last">Achternaam</label><input id="last" name="last" autocomplete="family-name" required maxlength="60" placeholder="Bijv. Jansen"></div>
+</div>
+<label for="context">Publieke context (optioneel)</label>
+<input id="context" name="context" maxlength="100" placeholder="Bijv. sportclub, beroep, evenement of plaats van activiteit">
+<p class="hint">Vul alleen een publieke context in, geen woonadres of privégegevens.</p>
+<button class="primary" type="submit">Zoek openbare bronnen</button>
+</form>
+<div class="results" id="results" aria-live="polite">
+<h2>Zoekresultaten openen</h2>
+<p class="hint">De links openen zoekopdrachten bij externe websites. Controleer altijd zelf of een resultaat over de juiste persoon gaat.</p>
+<div class="links" id="links"></div>
+</div>
+<div class="notice"><strong>Privacy:</strong> deze tool zoekt niet in privé-adressen, telefoonnummers, e-mailadressen, familiegegevens of databanken met persoonsgegevens. Er worden geen zoekopdrachten opgeslagen. Foto's van privépersonen worden niet verzameld of gebundeld.</div>
+</section>
+<footer>People Search Engine NL · Zoek alleen informatie die rechtmatig en met respect voor ieders privacy openbaar is.</footer>
+</main>
+<script>
+const form=document.getElementById('searchForm');
+form.addEventListener('submit',function(e){
+ e.preventDefault();
+ const first=document.getElementById('first').value.trim();
+ const last=document.getElementById('last').value.trim();
+ const context=document.getElementById('context').value.trim();
+ if(!first||!last)return;
+ const base='"'+first.replace(/"/g,'')+' '+last.replace(/"/g,'')+'"';
+ const q=(extra)=>encodeURIComponent([base,context,extra].filter(Boolean).join(' '));
+ const items=[
+  ['Google Nieuws — nieuwsartikelen', 'https://www.google.com/search?tbm=nws&q='+q('Nederland')],
+  ['Google — openbare websites', 'https://www.google.com/search?q='+q('Nederland')],
+  ['Overheid.nl — publieke informatie', 'https://www.google.com/search?q='+q('site:overheid.nl')],
+  ['Publieke organisaties en verenigingen', 'https://www.google.com/search?q='+q('vereniging OR organisatie OR evenement')]
+ ];
+ const box=document.getElementById('links');box.replaceChildren();
+ for(const [label,url] of items){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;box.appendChild(a)}
+ document.getElementById('results').style.display='block';
+});
+</script>
+</body>
+</html>
